@@ -1,26 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0b1220;
+  --surface: #121b2e;
+  --surface-2: #0e1626;
+  --border: #1f2a40;
+  --ink: #e6edf7;
+  --muted: #8291a8;
+  --cyan: #22d3ee;
+  --cyan-deep: #0891b2;
+  --green: #34d399;
+  --green-deep: #059669;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-cyan: var(--cyan);
+  --color-cyan-deep: var(--cyan-deep);
+  --color-green: var(--green);
+  --color-green-deep: var(--green-deep);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at 1.5px 1.5px, var(--border) 1px, transparent 1px) 0 0/24px 24px,
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), -apple-system, sans-serif;
 }

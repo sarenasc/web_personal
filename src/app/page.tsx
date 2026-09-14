@@ -26,65 +26,72 @@ export default async function Home() {
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-24">
       {/* Hero */}
-      <section className="mb-20 flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
-        <div className="h-32 w-32 shrink-0 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+      <section className="mb-24 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+        <div className="h-20 w-20 shrink-0 border border-cyan text-cyan sm:h-24 sm:w-24">
           {profile.heroPhotoUrl ? (
             <Image
               src={profile.heroPhotoUrl}
               alt={profile.name}
-              width={128}
-              height={128}
+              width={96}
+              height={96}
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm text-neutral-400">
-              Foto
+            <div className="flex h-full w-full items-center justify-center font-mono text-xl">
+              {profile.name
+                .split(" ")
+                .map((n) => n[0])
+                .slice(0, 2)
+                .join("")}
             </div>
           )}
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{profile.name}</h1>
-          <p className="mt-2 text-lg text-neutral-600 dark:text-neutral-400">{profile.title}</p>
-          <p className="mt-1 text-sm text-neutral-500">{profile.tagline}</p>
+          <h1 className="font-mono text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+            {profile.name}
+          </h1>
+          <p className="mt-1 font-mono text-sm text-cyan">{profile.title}</p>
+          <p className="mt-2 text-sm text-muted">{profile.tagline}</p>
         </div>
       </section>
 
       {/* Historia */}
       <section className="mb-20">
-        <h2 className="mb-4 text-xl font-semibold">Sobre mí</h2>
+        <SectionLabel>sobre-mi</SectionLabel>
         <div className="flex flex-col gap-6 sm:flex-row">
           {profile.aboutPhotoUrl && (
             <Image
               src={profile.aboutPhotoUrl}
               alt="Sobre mí"
-              width={200}
-              height={200}
-              className="h-40 w-40 shrink-0 rounded-lg object-cover"
+              width={180}
+              height={180}
+              className="h-36 w-36 shrink-0 border border-border object-cover"
             />
           )}
-          <p className="whitespace-pre-line text-neutral-700 dark:text-neutral-300">
-            {profile.bioLong}
-          </p>
+          <p className="whitespace-pre-line leading-relaxed text-muted">{profile.bioLong}</p>
         </div>
       </section>
 
       {/* Experiencia */}
       <section className="mb-20">
-        <h2 className="mb-6 text-xl font-semibold">Experiencia</h2>
-        <ol className="space-y-8 border-l border-neutral-200 pl-6 dark:border-neutral-800">
+        <SectionLabel>experiencia</SectionLabel>
+        <ol className="space-y-4">
           {experience.map((exp) => (
-            <li key={exp.id} className="relative">
-              <span className="absolute -left-[29px] top-1.5 h-2.5 w-2.5 rounded-full bg-neutral-900 dark:bg-neutral-100" />
-              <p className="text-sm text-neutral-500">
-                {exp.startDate} — {exp.endDate || "Presente"}
-              </p>
-              <h3 className="font-semibold">{exp.role}</h3>
-              <p className="text-neutral-600 dark:text-neutral-400">{exp.company}</p>
-              {exp.description && (
-                <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">
-                  {exp.description}
+            <li
+              key={exp.id}
+              className="flex gap-4 border border-border bg-surface px-5 py-4"
+            >
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-green shadow-[0_0_6px] shadow-green" />
+              <div>
+                <p className="font-mono text-xs tracking-wide text-muted">
+                  {exp.startDate} — {exp.endDate || "PRESENTE"}
                 </p>
-              )}
+                <h3 className="mt-1 font-semibold text-ink">{exp.role}</h3>
+                <p className="text-sm text-muted">{exp.company}</p>
+                {exp.description && (
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{exp.description}</p>
+                )}
+              </div>
             </li>
           ))}
         </ol>
@@ -92,16 +99,18 @@ export default async function Home() {
 
       {/* Skills */}
       <section className="mb-20">
-        <h2 className="mb-6 text-xl font-semibold">Skills</h2>
+        <SectionLabel>skills</SectionLabel>
         <div className="grid gap-6 sm:grid-cols-2">
           {Object.entries(skillsByCategory).map(([category, items]) => (
             <div key={category}>
-              <h3 className="mb-2 text-sm font-medium text-neutral-500">{category}</h3>
+              <h3 className="mb-2 font-mono text-xs uppercase tracking-wider text-muted">
+                {category}
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {items.map((skill) => (
                   <span
                     key={skill.id}
-                    className="rounded-full border border-neutral-200 px-3 py-1 text-sm dark:border-neutral-800"
+                    className="border border-cyan px-2.5 py-1 font-mono text-xs text-cyan before:content-['['] before:mr-1 before:text-muted after:content-[']'] after:ml-1 after:text-muted"
                   >
                     {skill.name}
                   </span>
@@ -114,25 +123,45 @@ export default async function Home() {
 
       {/* Contacto */}
       <section>
-        <h2 className="mb-4 text-xl font-semibold">Contacto</h2>
-        <div className="flex flex-wrap gap-4 text-sm">
+        <SectionLabel>contacto</SectionLabel>
+        <div className="flex flex-wrap gap-3">
           {profile.email && (
-            <a href={`mailto:${profile.email}`} className="underline hover:text-neutral-500">
+            <a
+              href={`mailto:${profile.email}`}
+              className="border border-green px-4 py-2 font-mono text-sm text-green transition hover:bg-green hover:text-[#062018]"
+            >
               {profile.email}
             </a>
           )}
           {profile.linkedinUrl && (
-            <a href={profile.linkedinUrl} target="_blank" className="underline hover:text-neutral-500">
+            <a
+              href={profile.linkedinUrl}
+              target="_blank"
+              className="border border-green px-4 py-2 font-mono text-sm text-green transition hover:bg-green hover:text-[#062018]"
+            >
               LinkedIn
             </a>
           )}
           {profile.githubUrl && (
-            <a href={profile.githubUrl} target="_blank" className="underline hover:text-neutral-500">
+            <a
+              href={profile.githubUrl}
+              target="_blank"
+              className="border border-green px-4 py-2 font-mono text-sm text-green transition hover:bg-green hover:text-[#062018]"
+            >
               GitHub
             </a>
           )}
         </div>
       </section>
     </main>
+  );
+}
+
+function SectionLabel({ children }: { children: string }) {
+  return (
+    <p className="mb-4 font-mono text-xs tracking-wider text-cyan">
+      <span className="text-muted">{"// "}</span>
+      {children}
+    </p>
   );
 }
