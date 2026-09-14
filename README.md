@@ -64,6 +64,12 @@ Como el contenido inicial vive en Vercel Blob solo después del primer guardado
 desde `/admin`, la primera visita a producción mostrará los valores de
 `data/default-content.json` hasta que edites algo desde el panel.
 
+**Si agregas o cambias una variable de entorno después del primer deploy:**
+el botón **Redeploy** del dashboard no siempre recoge variables nuevas (a
+veces reutiliza el snapshot del deployment original). Lo más confiable es
+generar un deploy nuevo con un `git push` — cualquier commit, por mínimo que
+sea — en vez de usar "Redeploy" sobre un deployment viejo.
+
 ## Estructura
 
 - `src/app/page.tsx` — sitio público (Hero, Sobre mí, Experiencia, Skills, Contacto).
