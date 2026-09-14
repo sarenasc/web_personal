@@ -82,7 +82,13 @@ export default async function AdminPage() {
           ))}
         </ul>
         <form action={addExperienceAction} className="grid gap-3 border-t border-neutral-100 pt-4">
-          <p className="text-sm font-medium">Agregar experiencia</p>
+          <div>
+            <p className="text-sm font-medium">Agregar experiencia</p>
+            <p className="text-xs text-neutral-500">
+              Se agregan una por una: completa y presiona Agregar. El formulario queda vacío,
+              listo para la siguiente.
+            </p>
+          </div>
           <Field label="Empresa" name="company" />
           <Field label="Cargo" name="role" />
           <div className="grid grid-cols-2 gap-3">
@@ -123,7 +129,13 @@ export default async function AdminPage() {
           ))}
         </ul>
         <form action={addEducationAction} className="grid gap-3 border-t border-neutral-100 pt-4">
-          <p className="text-sm font-medium">Agregar educación</p>
+          <div>
+            <p className="text-sm font-medium">Agregar educación</p>
+            <p className="text-xs text-neutral-500">
+              Se agregan una por una: completa y presiona Agregar. El formulario queda vacío,
+              listo para la siguiente.
+            </p>
+          </div>
           <Field label="Institución" name="institution" />
           <Field label="Programa / título" name="program" />
           <div className="grid grid-cols-2 gap-3">
@@ -151,6 +163,9 @@ export default async function AdminPage() {
           ))}
         </ul>
         <form action={addSkillAction} className="grid grid-cols-2 gap-3 border-t border-neutral-100 pt-4">
+          <p className="col-span-2 text-xs text-neutral-500">
+            Se agregan una por una: completa y presiona Agregar skill, cuantas veces quieras.
+          </p>
           <Field label="Nombre" name="name" />
           <Field label="Categoría" name="category" />
           <button className="col-span-2 w-fit rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700">
