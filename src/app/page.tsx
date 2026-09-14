@@ -7,15 +7,15 @@ import { UnderConstruction } from "./_components/UnderConstruction";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { profile, experience, skills } = await getContent();
-
   if (process.env.SITE_LIVE !== "true") {
     const cookieStore = await cookies();
     const isAdmin = await verifySessionToken(cookieStore.get(COOKIE_NAME)?.value);
     if (!isAdmin) {
-      return <UnderConstruction name={profile.name} />;
+      return <UnderConstruction />;
     }
   }
+
+  const { profile, experience, skills } = await getContent();
 
   const skillsByCategory = skills.reduce<Record<string, typeof skills>>((acc, skill) => {
     const key = skill.category || "Otros";
