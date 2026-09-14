@@ -56,7 +56,11 @@ desarrollo, Vercel Blob en producción).
    **Importante:** elige acceso **Public** para el store (no Private) — este
    código guarda el contenido y las fotos con `access: "public"`, y un store
    privado rechaza esos guardados con el error "Cannot use public access on
-   a private store".
+   a private store". Si cambias de store (borras uno y creas otro), el
+   `BLOB_READ_WRITE_TOKEN` anterior queda apuntando a un store que ya no
+   existe — tienes que reconectar el store nuevo al proyecto para que la
+   variable se actualice, y luego desplegar de nuevo (ver nota sobre
+   Redeploy más abajo).
 3. En **Settings → Environment Variables**, agrega `ADMIN_PASSWORD_HASH` y
    `SESSION_SECRET`. A diferencia de un archivo `.env` local, el dashboard de
    Vercel no expande los `$`, así que aquí el hash va tal cual (sin escapar).
