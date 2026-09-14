@@ -1,0 +1,33 @@
+{
+  "profile": {
+    "name": "Sergio Arenas Cuevas",
+    "title": "Jefe de Planificación y Control de Gestión | TI & Infraestructura",
+    "tagline": "10+ años en procesos productivos de fruta fresca · Análisis de Datos, BI, Python, SQL",
+    "bioShort": "Profesional con más de 10 años de experiencia liderando planificación, control de gestión e infraestructura TI en procesos productivos de fruta fresca.",
+    "bioLong": "Escribe aquí tu historia personal: de dónde vienes, qué te apasiona de tu trabajo y qué te diferencia. Puedes editar este texto desde el panel de administración en /admin.",
+    "location": "Chile",
+    "email": "sergio.arenas.cuevas@gmail.com",
+    "linkedinUrl": "",
+    "githubUrl": "",
+    "heroPhotoUrl": "",
+    "aboutPhotoUrl": ""
+  },
+  "experience": [
+    {
+      "id": "exp-1",
+      "company": "Empresas Agua Santa",
+      "role": "Jefe de Planificación y Control de Gestión",
+      "startDate": "2016",
+      "endDate": "",
+      "description": "Liderazgo de planificación, control de gestión e infraestructura TI (Windows/Linux, redes) en procesos productivos de fruta fresca.",
+      "logoUrl": ""
+    }
+  ],
+  "skills": [
+    { "id": "skill-1", "name": "Planificación y Control de Gestión", "category": "Gestión" },
+    { "id": "skill-2", "name": "Infraestructura TI (Windows/Linux, Redes)", "category": "TI" },
+    { "id": "skill-3", "name": "Python", "category": "Datos" },
+    { "id": "skill-4", "name": "SQL", "category": "Datos" },
+    { "id": "skill-5", "name": "Business Intelligence", "category": "Datos" }
+  ]
+}
