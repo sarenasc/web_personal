@@ -2,10 +2,10 @@
   "profile": {
     "name": "Sergio Arenas Cuevas",
     "title": "Jefe de Planificación y Control de Gestión | TI & Infraestructura",
-    "tagline": "10+ años en procesos productivos de fruta fresca · Análisis de Datos, BI, Python, SQL",
-    "bioShort": "Profesional con más de 10 años de experiencia liderando planificación, control de gestión e infraestructura TI en procesos productivos de fruta fresca.",
-    "bioLong": "Escribe aquí tu historia personal: de dónde vienes, qué te apasiona de tu trabajo y qué te diferencia. Puedes editar este texto desde el panel de administración en /admin.",
-    "location": "Chile",
+    "tagline": "15 años en TI · 10+ años en procesos productivos de fruta fresca · Análisis de Datos, BI, Python, SQL",
+    "bioShort": "Profesional con 15 años de experiencia en TI y 10 años en procesos productivos de fruta fresca, hoy enfocado en control de gestión, planificación y análisis de datos.",
+    "bioLong": "Profesional con 15 años de experiencia en el área tecnológica y 10 años en procesos productivos de fruta fresca — una combinación que me permite entender tanto la infraestructura que sostiene una planta como los procesos productivos que esa infraestructura debe servir.\n\nMi base técnica incluye administración de servidores Windows y Linux, redes de comunicaciones y enlaces wifi. Sobre esa base, hoy estoy enfocado en análisis de datos, Python y Business Intelligence —aprendiendo R— aplicados a control de gestión y planificación de procesos productivos.\n\nMe interesa el cruce entre análisis de datos e IA: convertir información operativa en decisiones de planificación más rápidas y mejor fundamentadas. Actualmente en Empresas Agua Santa, como Jefe de Planificación y Control de Gestión.",
+    "location": "Área Metropolitana de Rancagua, Chile",
     "email": "sergio.arenas.cuevas@gmail.com",
     "linkedinUrl": "https://www.linkedin.com/in/sergio-arenas-cuevas-91146847/",
     "githubUrl": "",
@@ -17,17 +17,45 @@
       "id": "exp-1",
       "company": "Empresas Agua Santa",
       "role": "Jefe de Planificación y Control de Gestión",
-      "startDate": "2016",
+      "startDate": "nov. 2022",
       "endDate": "",
-      "description": "Liderazgo de planificación, control de gestión e infraestructura TI (Windows/Linux, redes) en procesos productivos de fruta fresca.",
+      "description": "Planificación y control de gestión de procesos productivos, con foco en análisis de datos, Python y Business Intelligence.",
+      "logoUrl": ""
+    },
+    {
+      "id": "exp-2",
+      "company": "Prize",
+      "role": "Jefe de TI",
+      "startDate": "oct. 2016",
+      "endDate": "oct. 2022",
+      "description": "Liderazgo del área de TI: infraestructura, servidores Windows/Linux y redes.",
+      "logoUrl": ""
+    },
+    {
+      "id": "exp-3",
+      "company": "Prize",
+      "role": "Encargado de Informática",
+      "startDate": "nov. 2011",
+      "endDate": "oct. 2016",
+      "description": "Soporte y gestión de proyectos del área de informática.",
+      "logoUrl": ""
+    },
+    {
+      "id": "exp-4",
+      "company": "Tuniche Fruits",
+      "role": "Asistente Informática",
+      "startDate": "ene. 2011",
+      "endDate": "nov. 2011",
+      "description": "",
       "logoUrl": ""
     }
   ],
   "skills": [
     { "id": "skill-1", "name": "Planificación y Control de Gestión", "category": "Gestión" },
-    { "id": "skill-2", "name": "Infraestructura TI (Windows/Linux, Redes)", "category": "TI" },
-    { "id": "skill-3", "name": "Python", "category": "Datos" },
-    { "id": "skill-4", "name": "SQL", "category": "Datos" },
-    { "id": "skill-5", "name": "Business Intelligence", "category": "Datos" }
+    { "id": "skill-2", "name": "Liderazgo de equipos", "category": "Gestión" },
+    { "id": "skill-3", "name": "Infraestructura TI (Windows/Linux, Redes)", "category": "TI" },
+    { "id": "skill-4", "name": "Python", "category": "Datos" },
+    { "id": "skill-5", "name": "SQL", "category": "Datos" },
+    { "id": "skill-6", "name": "Business Intelligence", "category": "Datos" }
   ]
 }
