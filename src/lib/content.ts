@@ -33,11 +33,43 @@ export type Skill = {
   category: string;
 };
 
+export type Education = {
+  id: string;
+  institution: string;
+  program: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+};
+
+export type Message = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  body: string;
+  createdAt: string;
+};
+
 export type SiteContent = {
   profile: Profile;
   experience: Experience[];
+  education: Education[];
   skills: Skill[];
+  messages: Message[];
 };
+
+function normalize(content: Partial<SiteContent>): SiteContent {
+  const seed = defaultContent as SiteContent;
+  return {
+    profile: { ...seed.profile, ...content.profile },
+    experience: content.experience ?? [],
+    education: content.education ?? [],
+    skills: content.skills ?? [],
+    messages: content.messages ?? [],
+  };
+}
 
 const BLOB_PATHNAME = "content/site-data.json";
 const LOCAL_PATH = path.join(process.cwd(), "data", "content.json");
@@ -53,19 +85,19 @@ export async function getContent(): Promise<SiteContent> {
       const match = blobs.find((b) => b.pathname === BLOB_PATHNAME);
       if (match) {
         const res = await fetch(match.url, { cache: "no-store" });
-        if (res.ok) return (await res.json()) as SiteContent;
+        if (res.ok) return normalize((await res.json()) as Partial<SiteContent>);
       }
     } catch {
       // No blob saved yet — fall through to defaults.
     }
-    return defaultContent as SiteContent;
+    return normalize(defaultContent as Partial<SiteContent>);
   }
 
   try {
     const raw = await fs.readFile(LOCAL_PATH, "utf-8");
-    return JSON.parse(raw) as SiteContent;
+    return normalize(JSON.parse(raw) as Partial<SiteContent>);
   } catch {
-    return defaultContent as SiteContent;
+    return normalize(defaultContent as Partial<SiteContent>);
   }
 }
 

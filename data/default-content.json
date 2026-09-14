@@ -50,6 +50,16 @@
       "logoUrl": ""
     }
   ],
+  "education": [
+    {
+      "id": "edu-1",
+      "institution": "Instituto Profesional IACC",
+      "program": "Diplomado en Control de Gestión y Business Analytics",
+      "startDate": "",
+      "endDate": "",
+      "description": ""
+    }
+  ],
   "skills": [
     { "id": "skill-1", "name": "Planificación y Control de Gestión", "category": "Gestión" },
     { "id": "skill-2", "name": "Liderazgo de equipos", "category": "Gestión" },
@@ -57,5 +67,6 @@
     { "id": "skill-4", "name": "Python", "category": "Datos" },
     { "id": "skill-5", "name": "SQL", "category": "Datos" },
     { "id": "skill-6", "name": "Business Intelligence", "category": "Datos" }
-  ]
+  ],
+  "messages": []
 }

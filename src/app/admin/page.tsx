@@ -3,8 +3,11 @@ import {
   updateProfileAction,
   addExperienceAction,
   deleteExperienceAction,
+  addEducationAction,
+  deleteEducationAction,
   addSkillAction,
   deleteSkillAction,
+  deleteMessageAction,
   logoutAction,
 } from "./actions";
 
@@ -12,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const content = await getContent();
-  const { profile, experience, skills } = content;
+  const { profile, experience, education, skills, messages } = content;
 
   return (
     <main className="mx-auto min-h-screen max-w-3xl px-4 py-10">
@@ -97,7 +100,44 @@ export default async function AdminPage() {
         </form>
       </section>
 
-      <section className="rounded-xl border border-neutral-200 p-6">
+      <section className="mb-10 rounded-xl border border-neutral-200 p-6">
+        <h2 className="mb-4 text-lg font-semibold">Educación</h2>
+        <ul className="mb-6 space-y-3">
+          {education.map((edu) => (
+            <li key={edu.id} className="flex items-start justify-between rounded-md border border-neutral-100 p-3">
+              <div>
+                <p className="font-medium">{edu.program}</p>
+                <p className="text-sm text-neutral-500">{edu.institution}</p>
+                <p className="text-sm text-neutral-500">
+                  {edu.startDate || "—"} — {edu.endDate || "En curso"}
+                </p>
+                {edu.description && (
+                  <p className="mt-1 text-sm text-neutral-700">{edu.description}</p>
+                )}
+              </div>
+              <form action={deleteEducationAction}>
+                <input type="hidden" name="id" value={edu.id} />
+                <button className="text-sm text-red-600 hover:underline">Eliminar</button>
+              </form>
+            </li>
+          ))}
+        </ul>
+        <form action={addEducationAction} className="grid gap-3 border-t border-neutral-100 pt-4">
+          <p className="text-sm font-medium">Agregar educación</p>
+          <Field label="Institución" name="institution" />
+          <Field label="Programa / título" name="program" />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Inicio (opcional)" name="startDate" />
+            <Field label="Fin (vacío = en curso)" name="endDate" />
+          </div>
+          <TextArea label="Descripción (opcional)" name="description" rows={2} />
+          <button className="mt-1 w-fit rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700">
+            Agregar
+          </button>
+        </form>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-neutral-200 p-6">
         <h2 className="mb-4 text-lg font-semibold">Skills</h2>
         <ul className="mb-6 flex flex-wrap gap-2">
           {skills.map((skill) => (
@@ -117,6 +157,43 @@ export default async function AdminPage() {
             Agregar skill
           </button>
         </form>
+      </section>
+
+      <section className="rounded-xl border border-neutral-200 p-6">
+        <h2 className="mb-4 text-lg font-semibold">
+          Mensajes {messages.length > 0 && `(${messages.length})`}
+        </h2>
+        {messages.length === 0 ? (
+          <p className="text-sm text-neutral-500">Todavía no has recibido mensajes.</p>
+        ) : (
+          <ul className="space-y-3">
+            {[...messages].reverse().map((msg) => (
+              <li key={msg.id} className="rounded-md border border-neutral-100 p-3">
+                <div className="mb-1 flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-medium">
+                      {msg.firstName} {msg.lastName}
+                    </p>
+                    <p className="text-xs text-neutral-500">
+                      {new Date(msg.createdAt).toLocaleString("es-CL")}
+                    </p>
+                  </div>
+                  <form action={deleteMessageAction}>
+                    <input type="hidden" name="id" value={msg.id} />
+                    <button className="text-sm text-red-600 hover:underline">Eliminar</button>
+                  </form>
+                </div>
+                <p className="whitespace-pre-line text-sm text-neutral-700">{msg.body}</p>
+                <div className="mt-2 flex flex-wrap gap-3 text-xs text-neutral-500">
+                  <a href={`mailto:${msg.email}`} className="underline">
+                    {msg.email}
+                  </a>
+                  {msg.phone && <span>{msg.phone}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </main>
   );

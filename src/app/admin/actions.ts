@@ -118,3 +118,33 @@ export async function deleteSkillAction(formData: FormData) {
   await saveContent(content);
   redirect("/admin");
 }
+
+export async function addEducationAction(formData: FormData) {
+  const content = await getContent();
+  content.education.push({
+    id: randomUUID(),
+    institution: String(formData.get("institution") ?? ""),
+    program: String(formData.get("program") ?? ""),
+    startDate: String(formData.get("startDate") ?? ""),
+    endDate: String(formData.get("endDate") ?? ""),
+    description: String(formData.get("description") ?? ""),
+  });
+  await saveContent(content);
+  redirect("/admin");
+}
+
+export async function deleteEducationAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const content = await getContent();
+  content.education = content.education.filter((edu) => edu.id !== id);
+  await saveContent(content);
+  redirect("/admin");
+}
+
+export async function deleteMessageAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const content = await getContent();
+  content.messages = content.messages.filter((msg) => msg.id !== id);
+  await saveContent(content);
+  redirect("/admin");
+}
