@@ -76,6 +76,12 @@ export async function saveContent(content: SiteContent): Promise<void> {
     return;
   }
 
+  if (process.env.VERCEL) {
+    throw new Error(
+      "Falta configurar Vercel Blob: agrega un Blob store en Storage → Create Database y vuelve a desplegar (BLOB_READ_WRITE_TOKEN se agrega solo)."
+    );
+  }
+
   await fs.mkdir(path.dirname(LOCAL_PATH), { recursive: true });
   await fs.writeFile(LOCAL_PATH, JSON.stringify(content, null, 2), "utf-8");
 }
@@ -86,6 +92,12 @@ export async function uploadPhoto(file: File, prefix: string): Promise<string> {
       access: "public",
     });
     return blob.url;
+  }
+
+  if (process.env.VERCEL) {
+    throw new Error(
+      "Falta configurar Vercel Blob: agrega un Blob store en Storage → Create Database y vuelve a desplegar (BLOB_READ_WRITE_TOKEN se agrega solo)."
+    );
   }
 
   const uploadsDir = path.join(process.cwd(), "public", "uploads");
