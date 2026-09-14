@@ -30,6 +30,10 @@ Copia `.env.example` a `.env.local` y completa:
 - `BLOB_READ_WRITE_TOKEN`: solo necesario en producción (ver abajo). En local
   puedes dejarla vacía — el contenido se guarda en `data/content.json` y las
   fotos subidas en `public/uploads/` (ambos ignorados por git).
+- `SITE_LIVE`: déjala vacía mientras construyes el sitio. La home le muestra
+  "en construcción" a cualquier visitante que no haya iniciado sesión en
+  `/admin` — tú, logueado, siempre ves el sitio real. Ponla en `true` cuando
+  quieras que todos vean el sitio.
 
 ## Cómo funciona el contenido
 
@@ -50,8 +54,11 @@ desarrollo, Vercel Blob en producción).
 2. En el proyecto, ve a **Storage → Create Database → Blob** para habilitar
    Vercel Blob. Esto agrega automáticamente la variable `BLOB_READ_WRITE_TOKEN`.
 3. En **Settings → Environment Variables**, agrega `ADMIN_PASSWORD_HASH` y
-   `SESSION_SECRET` (mismas reglas que en local: escapar los `$` del hash).
-4. Deploy. El sitio público queda en `/` y el panel en `/admin`.
+   `SESSION_SECRET`. A diferencia de un archivo `.env` local, el dashboard de
+   Vercel no expande los `$`, así que aquí el hash va tal cual (sin escapar).
+4. Deploy. El sitio público queda en `/` y el panel en `/admin`. Mientras
+   `SITE_LIVE` no esté en `true`, solo tú (logueado en `/admin`) ves el sitio
+   real — el resto ve "en construcción".
 
 Como el contenido inicial vive en Vercel Blob solo después del primer guardado
 desde `/admin`, la primera visita a producción mostrará los valores de
