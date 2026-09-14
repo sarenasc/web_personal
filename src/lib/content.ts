@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { put, head } from "@vercel/blob";
+import { put, list } from "@vercel/blob";
 import defaultContent from "../../data/default-content.json";
 
 export type Profile = {
@@ -49,9 +49,12 @@ function hasBlobToken() {
 export async function getContent(): Promise<SiteContent> {
   if (hasBlobToken()) {
     try {
-      const blob = await head(BLOB_PATHNAME);
-      const res = await fetch(blob.url, { cache: "no-store" });
-      if (res.ok) return (await res.json()) as SiteContent;
+      const { blobs } = await list({ prefix: BLOB_PATHNAME, limit: 1 });
+      const match = blobs.find((b) => b.pathname === BLOB_PATHNAME);
+      if (match) {
+        const res = await fetch(match.url, { cache: "no-store" });
+        if (res.ok) return (await res.json()) as SiteContent;
+      }
     } catch {
       // No blob saved yet — fall through to defaults.
     }
@@ -71,6 +74,7 @@ export async function saveContent(content: SiteContent): Promise<void> {
     await put(BLOB_PATHNAME, JSON.stringify(content, null, 2), {
       access: "public",
       contentType: "application/json",
+      addRandomSuffix: false,
       allowOverwrite: true,
     });
     return;
