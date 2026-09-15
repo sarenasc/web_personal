@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { createSessionToken, COOKIE_NAME } from "@/lib/auth";
-import { getContent, saveContent, uploadPhoto } from "@/lib/content";
+import { updateContent, uploadPhoto } from "@/lib/content";
 
 export async function loginAction(_prevState: { error: string } | undefined, formData: FormData) {
   const password = String(formData.get("password") ?? "");
@@ -40,10 +40,7 @@ export async function logoutAction() {
 }
 
 export async function updateProfileAction(formData: FormData) {
-  const content = await getContent();
-
-  content.profile = {
-    ...content.profile,
+  const fields = {
     name: String(formData.get("name") ?? ""),
     title: String(formData.get("title") ?? ""),
     tagline: String(formData.get("tagline") ?? ""),
@@ -56,116 +53,117 @@ export async function updateProfileAction(formData: FormData) {
   };
 
   const heroPhoto = formData.get("heroPhoto");
-  if (heroPhoto instanceof File && heroPhoto.size > 0) {
-    content.profile.heroPhotoUrl = await uploadPhoto(heroPhoto, "hero");
-  }
+  const heroPhotoUrl =
+    heroPhoto instanceof File && heroPhoto.size > 0 ? await uploadPhoto(heroPhoto, "hero") : null;
 
   const aboutPhoto = formData.get("aboutPhoto");
-  if (aboutPhoto instanceof File && aboutPhoto.size > 0) {
-    content.profile.aboutPhotoUrl = await uploadPhoto(aboutPhoto, "about");
-  }
+  const aboutPhotoUrl =
+    aboutPhoto instanceof File && aboutPhoto.size > 0 ? await uploadPhoto(aboutPhoto, "about") : null;
 
-  await saveContent(content);
+  await updateContent((content) => {
+    content.profile = { ...content.profile, ...fields };
+    if (heroPhotoUrl) content.profile.heroPhotoUrl = heroPhotoUrl;
+    if (aboutPhotoUrl) content.profile.aboutPhotoUrl = aboutPhotoUrl;
+  });
+
   redirect("/admin");
 }
 
 export async function addExperienceAction(formData: FormData) {
-  const content = await getContent();
-
-  let logoUrl = "";
-  const logo = formData.get("logo");
-  if (logo instanceof File && logo.size > 0) {
-    logoUrl = await uploadPhoto(logo, "logo");
-  }
-
-  content.experience.push({
-    id: randomUUID(),
+  const fields = {
     company: String(formData.get("company") ?? ""),
     role: String(formData.get("role") ?? ""),
     startDate: String(formData.get("startDate") ?? ""),
     endDate: String(formData.get("endDate") ?? ""),
     description: String(formData.get("description") ?? ""),
-    logoUrl,
+  };
+
+  const logo = formData.get("logo");
+  const logoUrl = logo instanceof File && logo.size > 0 ? await uploadPhoto(logo, "logo") : "";
+
+  await updateContent((content) => {
+    content.experience.push({ id: randomUUID(), ...fields, logoUrl });
   });
 
-  await saveContent(content);
   redirect("/admin");
 }
 
 export async function updateExperienceAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  const content = await getContent();
-  const exp = content.experience.find((e) => e.id === id);
-  if (!exp) redirect("/admin");
-
-  exp.company = String(formData.get("company") ?? "");
-  exp.role = String(formData.get("role") ?? "");
-  exp.startDate = String(formData.get("startDate") ?? "");
-  exp.endDate = String(formData.get("endDate") ?? "");
-  exp.description = String(formData.get("description") ?? "");
+  const fields = {
+    company: String(formData.get("company") ?? ""),
+    role: String(formData.get("role") ?? ""),
+    startDate: String(formData.get("startDate") ?? ""),
+    endDate: String(formData.get("endDate") ?? ""),
+    description: String(formData.get("description") ?? ""),
+  };
 
   const logo = formData.get("logo");
-  if (logo instanceof File && logo.size > 0) {
-    exp.logoUrl = await uploadPhoto(logo, "logo");
-  }
+  const logoUrl = logo instanceof File && logo.size > 0 ? await uploadPhoto(logo, "logo") : null;
 
-  await saveContent(content);
+  await updateContent((content) => {
+    const exp = content.experience.find((e) => e.id === id);
+    if (!exp) return;
+    Object.assign(exp, fields);
+    if (logoUrl) exp.logoUrl = logoUrl;
+  });
+
   redirect("/admin");
 }
 
 export async function deleteExperienceAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  const content = await getContent();
-  content.experience = content.experience.filter((exp) => exp.id !== id);
-  await saveContent(content);
+  await updateContent((content) => {
+    content.experience = content.experience.filter((exp) => exp.id !== id);
+  });
   redirect("/admin");
 }
 
 export async function addSkillAction(formData: FormData) {
-  const content = await getContent();
-  content.skills.push({
-    id: randomUUID(),
+  const fields = {
     name: String(formData.get("name") ?? ""),
     category: String(formData.get("category") ?? ""),
+  };
+  await updateContent((content) => {
+    content.skills.push({ id: randomUUID(), ...fields });
   });
-  await saveContent(content);
   redirect("/admin");
 }
 
 export async function deleteSkillAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  const content = await getContent();
-  content.skills = content.skills.filter((skill) => skill.id !== id);
-  await saveContent(content);
+  await updateContent((content) => {
+    content.skills = content.skills.filter((skill) => skill.id !== id);
+  });
   redirect("/admin");
 }
 
 export async function addEducationAction(formData: FormData) {
-  const content = await getContent();
-  content.education.push({
-    id: randomUUID(),
+  const fields = {
     institution: String(formData.get("institution") ?? ""),
     program: String(formData.get("program") ?? ""),
     startDate: String(formData.get("startDate") ?? ""),
     endDate: String(formData.get("endDate") ?? ""),
     description: String(formData.get("description") ?? ""),
+  };
+  await updateContent((content) => {
+    content.education.push({ id: randomUUID(), ...fields });
   });
-  await saveContent(content);
   redirect("/admin");
 }
 
 export async function deleteEducationAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  const content = await getContent();
-  content.education = content.education.filter((edu) => edu.id !== id);
-  await saveContent(content);
+  await updateContent((content) => {
+    content.education = content.education.filter((edu) => edu.id !== id);
+  });
   redirect("/admin");
 }
 
 export async function deleteMessageAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  const content = await getContent();
-  content.messages = content.messages.filter((msg) => msg.id !== id);
-  await saveContent(content);
+  await updateContent((content) => {
+    content.messages = content.messages.filter((msg) => msg.id !== id);
+  });
   redirect("/admin");
 }

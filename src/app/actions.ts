@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { randomUUID } from "crypto";
-import { getContent, saveContent } from "@/lib/content";
+import { updateContent } from "@/lib/content";
 
 export async function submitContactMessage(formData: FormData) {
   const firstName = String(formData.get("firstName") ?? "").trim();
@@ -15,17 +15,17 @@ export async function submitContactMessage(formData: FormData) {
     redirect("/?enviado=0");
   }
 
-  const content = await getContent();
-  content.messages.push({
-    id: randomUUID(),
-    firstName,
-    lastName,
-    email,
-    phone,
-    body,
-    createdAt: new Date().toISOString(),
+  await updateContent((content) => {
+    content.messages.push({
+      id: randomUUID(),
+      firstName,
+      lastName,
+      email,
+      phone,
+      body,
+      createdAt: new Date().toISOString(),
+    });
   });
-  await saveContent(content);
 
   redirect("/?enviado=1");
 }

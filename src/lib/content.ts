@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { put, get } from "@vercel/blob";
+import { put, get, BlobPreconditionFailedError } from "@vercel/blob";
 import defaultContent from "../../data/default-content.json";
 
 export type Profile = {
@@ -78,18 +78,26 @@ function hasBlobToken() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
+async function readBlobContent(): Promise<{ content: SiteContent; etag: string | null }> {
+  try {
+    const result = await get(BLOB_PATHNAME, { access: "public", useCache: false });
+    if (result) {
+      const text = await new Response(result.stream).text();
+      return {
+        content: normalize(JSON.parse(text) as Partial<SiteContent>),
+        etag: result.blob.etag,
+      };
+    }
+  } catch {
+    // No blob saved yet — fall through to defaults.
+  }
+  return { content: normalize(defaultContent as Partial<SiteContent>), etag: null };
+}
+
 export async function getContent(): Promise<SiteContent> {
   if (hasBlobToken()) {
-    try {
-      const result = await get(BLOB_PATHNAME, { access: "public", useCache: false });
-      if (result) {
-        const text = await new Response(result.stream).text();
-        return normalize(JSON.parse(text) as Partial<SiteContent>);
-      }
-    } catch {
-      // No blob saved yet — fall through to defaults.
-    }
-    return normalize(defaultContent as Partial<SiteContent>);
+    const { content } = await readBlobContent();
+    return content;
   }
 
   try {
@@ -100,15 +108,34 @@ export async function getContent(): Promise<SiteContent> {
   }
 }
 
-export async function saveContent(content: SiteContent): Promise<void> {
+/**
+ * Applies `mutate` to the current content and saves it. On Blob storage,
+ * uses a conditional write (ETag) and retries with a fresh read on
+ * conflict, so two near-simultaneous saves can't silently overwrite
+ * each other (a submit-twice or two-tabs-open race).
+ */
+export async function updateContent(mutate: (content: SiteContent) => void): Promise<SiteContent> {
   if (hasBlobToken()) {
-    await put(BLOB_PATHNAME, JSON.stringify(content, null, 2), {
-      access: "public",
-      contentType: "application/json",
-      addRandomSuffix: false,
-      allowOverwrite: true,
-    });
-    return;
+    const maxAttempts = 5;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const { content, etag } = await readBlobContent();
+      mutate(content);
+      try {
+        await put(BLOB_PATHNAME, JSON.stringify(content, null, 2), {
+          access: "public",
+          contentType: "application/json",
+          addRandomSuffix: false,
+          allowOverwrite: true,
+          ifMatch: etag ?? undefined,
+        });
+        return content;
+      } catch (err) {
+        if (err instanceof BlobPreconditionFailedError && attempt < maxAttempts) {
+          continue;
+        }
+        throw err;
+      }
+    }
   }
 
   if (process.env.VERCEL) {
@@ -117,8 +144,11 @@ export async function saveContent(content: SiteContent): Promise<void> {
     );
   }
 
+  const content = await getContent();
+  mutate(content);
   await fs.mkdir(path.dirname(LOCAL_PATH), { recursive: true });
   await fs.writeFile(LOCAL_PATH, JSON.stringify(content, null, 2), "utf-8");
+  return content;
 }
 
 export async function uploadPhoto(file: File, prefix: string): Promise<string> {
