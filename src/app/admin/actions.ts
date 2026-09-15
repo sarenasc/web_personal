@@ -92,6 +92,27 @@ export async function addExperienceAction(formData: FormData) {
   redirect("/admin");
 }
 
+export async function updateExperienceAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const content = await getContent();
+  const exp = content.experience.find((e) => e.id === id);
+  if (!exp) redirect("/admin");
+
+  exp.company = String(formData.get("company") ?? "");
+  exp.role = String(formData.get("role") ?? "");
+  exp.startDate = String(formData.get("startDate") ?? "");
+  exp.endDate = String(formData.get("endDate") ?? "");
+  exp.description = String(formData.get("description") ?? "");
+
+  const logo = formData.get("logo");
+  if (logo instanceof File && logo.size > 0) {
+    exp.logoUrl = await uploadPhoto(logo, "logo");
+  }
+
+  await saveContent(content);
+  redirect("/admin");
+}
+
 export async function deleteExperienceAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const content = await getContent();

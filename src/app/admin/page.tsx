@@ -2,6 +2,7 @@ import { getContent } from "@/lib/content";
 import {
   updateProfileAction,
   addExperienceAction,
+  updateExperienceAction,
   deleteExperienceAction,
   addEducationAction,
   deleteEducationAction,
@@ -64,20 +65,50 @@ export default async function AdminPage() {
         <h2 className="mb-4 text-lg font-semibold">Experiencia</h2>
         <ul className="mb-6 space-y-3">
           {experience.map((exp) => (
-            <li key={exp.id} className="flex items-start justify-between rounded-md border border-neutral-100 p-3">
-              <div>
-                <p className="font-medium">
-                  {exp.role} · {exp.company}
-                </p>
-                <p className="text-sm text-neutral-500">
-                  {exp.startDate} — {exp.endDate || "Presente"}
-                </p>
-                <p className="mt-1 text-sm text-neutral-700">{exp.description}</p>
+            <li key={exp.id} className="rounded-md border border-neutral-100 p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-medium">
+                    {exp.role} · {exp.company}
+                  </p>
+                  <p className="text-sm text-neutral-500">
+                    {exp.startDate} — {exp.endDate || "Presente"}
+                  </p>
+                  <p className="mt-1 text-sm text-neutral-700">{exp.description}</p>
+                </div>
+                <form action={deleteExperienceAction}>
+                  <input type="hidden" name="id" value={exp.id} />
+                  <button className="shrink-0 text-sm text-red-600 hover:underline">Eliminar</button>
+                </form>
               </div>
-              <form action={deleteExperienceAction}>
-                <input type="hidden" name="id" value={exp.id} />
-                <button className="text-sm text-red-600 hover:underline">Eliminar</button>
-              </form>
+              <details className="mt-2">
+                <summary className="cursor-pointer text-sm text-neutral-600 hover:underline">
+                  Editar
+                </summary>
+                <form
+                  action={updateExperienceAction}
+                  className="mt-3 grid gap-3 border-t border-neutral-100 pt-3"
+                >
+                  <input type="hidden" name="id" value={exp.id} />
+                  <Field label="Empresa" name="company" defaultValue={exp.company} />
+                  <Field label="Cargo" name="role" defaultValue={exp.role} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Inicio" name="startDate" defaultValue={exp.startDate} />
+                    <Field label="Fin (vacío = presente)" name="endDate" defaultValue={exp.endDate} />
+                  </div>
+                  <TextArea label="Descripción" name="description" defaultValue={exp.description} rows={3} />
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">Logo (opcional)</label>
+                    {exp.logoUrl && (
+                      <p className="mb-1 text-xs text-neutral-500">Actual: {exp.logoUrl}</p>
+                    )}
+                    <input type="file" name="logo" accept="image/*" className="text-sm" />
+                  </div>
+                  <button className="w-fit rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700">
+                    Guardar cambios
+                  </button>
+                </form>
+              </details>
             </li>
           ))}
         </ul>
