@@ -3,15 +3,11 @@ import { cookies } from "next/headers";
 import { getContent } from "@/lib/content";
 import { COOKIE_NAME, verifySessionToken } from "@/lib/auth";
 import { UnderConstruction } from "./_components/UnderConstruction";
-import { submitContactMessage } from "./actions";
+import { ContactForm } from "./ContactForm";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ enviado?: string }>;
-}) {
+export default async function Home() {
   if (process.env.SITE_LIVE !== "true") {
     const cookieStore = await cookies();
     const isAdmin = await verifySessionToken(cookieStore.get(COOKIE_NAME)?.value);
@@ -21,7 +17,6 @@ export default async function Home({
   }
 
   const { profile, experience, education, skills } = await getContent();
-  const { enviado } = await searchParams;
 
   const skillsByCategory = skills.reduce<Record<string, typeof skills>>((acc, skill) => {
     const key = skill.category || "Otros";
@@ -189,69 +184,9 @@ export default async function Home({
           )}
         </div>
 
-        {enviado === "1" && (
-          <p className="mb-6 border border-green px-4 py-3 font-mono text-sm text-green">
-            {"// "}mensaje enviado. gracias, te voy a responder pronto.
-          </p>
-        )}
-        {enviado === "0" && (
-          <p className="mb-6 border border-cyan px-4 py-3 font-mono text-sm text-cyan">
-            {"// "}faltan campos obligatorios. intenta de nuevo.
-          </p>
-        )}
-
-        <form action={submitContactMessage} className="grid max-w-md gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            <ContactField label="nombre" name="firstName" required />
-            <ContactField label="apellido" name="lastName" required />
-          </div>
-          <ContactField label="correo" name="email" type="email" required />
-          <ContactField label="telefono" name="phone" type="tel" />
-          <div>
-            <label className="mb-1 block font-mono text-xs text-muted">mensaje *</label>
-            <textarea
-              name="body"
-              required
-              rows={4}
-              className="w-full border border-border bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-cyan"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-fit border border-cyan px-5 py-2 font-mono text-sm text-cyan transition hover:bg-cyan hover:text-[#06202c]"
-          >
-            enviar
-          </button>
-        </form>
+        <ContactForm />
       </section>
     </main>
-  );
-}
-
-function ContactField({
-  label,
-  name,
-  type = "text",
-  required = false,
-}: {
-  label: string;
-  name: string;
-  type?: string;
-  required?: boolean;
-}) {
-  return (
-    <div>
-      <label className="mb-1 block font-mono text-xs text-muted">
-        {label}
-        {required ? " *" : ""}
-      </label>
-      <input
-        type={type}
-        name={name}
-        required={required}
-        className="w-full border border-border bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-cyan"
-      />
-    </div>
   );
 }
 

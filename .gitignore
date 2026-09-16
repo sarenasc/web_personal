@@ -39,6 +39,9 @@ yarn-error.log*
 
 # local content edits (production uses Vercel Blob instead)
 /data/content.json
+/data/messages.json
+/data/ratelimits.json
+/data/idempotency.json
 /public/uploads
 
 # typescript

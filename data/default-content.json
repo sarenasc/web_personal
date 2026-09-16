@@ -67,6 +67,5 @@
     { "id": "skill-4", "name": "Python", "category": "Datos" },
     { "id": "skill-5", "name": "SQL", "category": "Datos" },
     { "id": "skill-6", "name": "Business Intelligence", "category": "Datos" }
-  ],
-  "messages": []
+  ]
 }
