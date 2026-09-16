@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { put, get, BlobPreconditionFailedError } from "@vercel/blob";
+import { put, get, head, BlobPreconditionFailedError } from "@vercel/blob";
 import defaultContent from "../../data/default-content.json";
 
 export type Profile = {
@@ -80,12 +80,20 @@ function hasBlobToken() {
 
 async function readBlobContent(): Promise<{ content: SiteContent; etag: string | null }> {
   try {
-    const result = await get(BLOB_PATHNAME, { access: "public", useCache: false });
+    // `useCache: false` on get() only bypasses the CDN for private stores —
+    // for a public store (ours) it's a silent no-op, so reads could return a
+    // stale cached copy. head() always hits Vercel's live control API (never
+    // the CDN), so it gives a trustworthy ETag; appending a cache-busting
+    // query param to the real blob URL forces get() past the CDN cache too.
+    const meta = await head(BLOB_PATHNAME);
+    const freshUrl = new URL(meta.url);
+    freshUrl.searchParams.set("_v", Date.now().toString());
+    const result = await get(freshUrl.toString(), { access: "public" });
     if (result) {
       const text = await new Response(result.stream).text();
       return {
         content: normalize(JSON.parse(text) as Partial<SiteContent>),
-        etag: result.blob.etag,
+        etag: meta.etag,
       };
     }
   } catch {
