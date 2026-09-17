@@ -45,6 +45,7 @@ export type Skill = {
   id: string;
   name: string;
   category: string;
+  version?: number;
 };
 
 export type Education = {
@@ -144,7 +145,7 @@ function isEducation(v: unknown): v is Education {
 function isSkill(v: unknown): v is Skill {
   if (typeof v !== "object" || v === null) return false;
   const s = v as Record<string, unknown>;
-  return isString(s.id) && isString(s.name) && isString(s.category);
+  return isString(s.id) && isString(s.name) && isString(s.category) && isOptionalNumber(s.version);
 }
 
 export function isSiteContent(v: unknown): v is SiteContent {

@@ -90,6 +90,11 @@ function ExperienceItem({ exp }: { exp: Experience }) {
             <label className="mb-1 block text-sm font-medium">Logo (opcional)</label>
             {exp.logoUrl && <p className="mb-1 text-xs text-neutral-500">Actual: {exp.logoUrl}</p>}
             <input type="file" name="logo" accept={IMAGE_ACCEPT} className="text-sm" />
+            {exp.logoUrl && (
+              <label className="mt-1 flex items-center gap-1.5 text-xs text-neutral-600">
+                <input type="checkbox" name="removeLogo" value="on" /> Quitar logo actual
+              </label>
+            )}
           </div>
           <SubmitButton
             pendingLabel="Guardando…"

@@ -62,6 +62,11 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           </div>
         )}
         <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/gif" className="text-sm" />
+        {profile.logoUrl && (
+          <label className="mt-1 flex items-center gap-1.5 text-xs text-neutral-600">
+            <input type="checkbox" name="removeLogo" value="on" /> Quitar logo actual
+          </label>
+        )}
         <p className="mt-1 text-xs text-neutral-500">
           Se usa como logo en el encabezado del sitio público y como ícono (favicon) de la pestaña del navegador.
         </p>
@@ -70,11 +75,21 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         <label className="mb-1 block text-sm font-medium">Foto principal (hero)</label>
         {profile.heroPhotoUrl && <p className="mb-1 text-xs text-neutral-500">Actual: {profile.heroPhotoUrl}</p>}
         <input type="file" name="heroPhoto" accept="image/png,image/jpeg,image/webp,image/gif" className="text-sm" />
+        {profile.heroPhotoUrl && (
+          <label className="mt-1 flex items-center gap-1.5 text-xs text-neutral-600">
+            <input type="checkbox" name="removeHeroPhoto" value="on" /> Quitar foto actual
+          </label>
+        )}
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium">Foto sección historia</label>
         {profile.aboutPhotoUrl && <p className="mb-1 text-xs text-neutral-500">Actual: {profile.aboutPhotoUrl}</p>}
         <input type="file" name="aboutPhoto" accept="image/png,image/jpeg,image/webp,image/gif" className="text-sm" />
+        {profile.aboutPhotoUrl && (
+          <label className="mt-1 flex items-center gap-1.5 text-xs text-neutral-600">
+            <input type="checkbox" name="removeAboutPhoto" value="on" /> Quitar foto actual
+          </label>
+        )}
       </div>
       <SubmitButton
         pendingLabel="Guardando…"

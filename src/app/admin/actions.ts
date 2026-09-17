@@ -111,6 +111,11 @@ export async function updateProfileAction(_prevState: ActionState, formData: For
     if (about.url) await deleteUploadedFile(about.url);
     return errorState(logo.error, undefined, fields);
   }
+  // A new upload always wins over "quitar" for the same field — the checkbox
+  // only takes effect when nothing new was chosen.
+  const removeHero = formData.get("removeHeroPhoto") === "on" && !hero.url;
+  const removeAbout = formData.get("removeAboutPhoto") === "on" && !about.url;
+  const removeLogo = formData.get("removeLogo") === "on" && !logo.url;
 
   let previousHeroUrl: string | undefined;
   let previousAboutUrl: string | undefined;
@@ -125,8 +130,11 @@ export async function updateProfileAction(_prevState: ActionState, formData: For
       previousLogoUrl = content.profile.logoUrl;
       content.profile = { ...content.profile, ...fields, version: currentVersion(content.profile.version) + 1 };
       if (hero.url) content.profile.heroPhotoUrl = hero.url;
+      else if (removeHero) content.profile.heroPhotoUrl = "";
       if (about.url) content.profile.aboutPhotoUrl = about.url;
+      else if (removeAbout) content.profile.aboutPhotoUrl = "";
       if (logo.url) content.profile.logoUrl = logo.url;
+      else if (removeLogo) content.profile.logoUrl = "";
     });
   } catch (err) {
     if (hero.url) await deleteUploadedFile(hero.url);
@@ -136,9 +144,9 @@ export async function updateProfileAction(_prevState: ActionState, formData: For
     return errorState("No se pudo guardar el perfil. Intenta de nuevo.", undefined, fields);
   }
 
-  if (hero.url && previousHeroUrl) void deleteUploadedFile(previousHeroUrl);
-  if (about.url && previousAboutUrl) void deleteUploadedFile(previousAboutUrl);
-  if (logo.url && previousLogoUrl) void deleteUploadedFile(previousLogoUrl);
+  if ((hero.url || removeHero) && previousHeroUrl) void deleteUploadedFile(previousHeroUrl);
+  if ((about.url || removeAbout) && previousAboutUrl) void deleteUploadedFile(previousAboutUrl);
+  if ((logo.url || removeLogo) && previousLogoUrl) void deleteUploadedFile(previousLogoUrl);
   return successState("Perfil guardado.");
 }
 
@@ -208,6 +216,7 @@ export async function updateExperienceAction(_prevState: ActionState, formData: 
 
   const logo = await uploadPhotoField(formData, "logo");
   if (logo.error) return errorState(logo.error, undefined, fields);
+  const removeLogo = formData.get("removeLogo") === "on" && !logo.url;
 
   let previousLogoUrl: string | undefined;
   try {
@@ -223,6 +232,7 @@ export async function updateExperienceAction(_prevState: ActionState, formData: 
       Object.assign(exp, fields);
       exp.version = currentVersion(exp.version) + 1;
       if (logo.url) exp.logoUrl = logo.url;
+      else if (removeLogo) exp.logoUrl = "";
     });
   } catch (err) {
     if (logo.url) await deleteUploadedFile(logo.url);
@@ -230,7 +240,7 @@ export async function updateExperienceAction(_prevState: ActionState, formData: 
     return errorState("No se pudo guardar los cambios. Intenta de nuevo.", undefined, fields);
   }
 
-  if (logo.url && previousLogoUrl) void deleteUploadedFile(previousLogoUrl);
+  if ((logo.url || removeLogo) && previousLogoUrl) void deleteUploadedFile(previousLogoUrl);
   return successState("Cambios guardados.");
 }
 
@@ -267,9 +277,50 @@ export async function addSkillAction(_prevState: ActionState, formData: FormData
   }
 
   await updateContent((content) => {
-    content.skills.push({ id: randomUUID(), ...fields });
+    content.skills.push({ id: randomUUID(), ...fields, version: 1 });
   });
   return successState("Skill agregado.");
+}
+
+export async function updateSkillAction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdmin();
+
+  const id = trimmedString(formData, "id", 100);
+  const submittedVersion = Number(formData.get("version") ?? "1");
+  const idempotencyKey = trimmedString(formData, "idempotencyKey", 100);
+  const fields = {
+    name: trimmedString(formData, "name", 100),
+    category: trimmedString(formData, "category", 100),
+  };
+
+  const errors: Record<string, string> = {};
+  requireNonEmpty(fields.name, "name", errors, "Nombre");
+  if (Object.keys(errors).length > 0) {
+    return errorState("Revisa los campos marcados.", errors, fields);
+  }
+
+  if (idempotencyKey && !(await claimIdempotencyKey(`update-skill:${idempotencyKey}`))) {
+    return successState("Cambios guardados.");
+  }
+
+  try {
+    await updateContent((content) => {
+      const skill = content.skills.find((s) => s.id === id);
+      if (!skill) {
+        throw new ConflictError("Este registro ya no existe (probablemente se eliminó en otra sesión).");
+      }
+      if (currentVersion(skill.version) !== submittedVersion) {
+        throw new ConflictError("Este registro se modificó en otra sesión mientras lo editabas. Revisa los valores actuales.");
+      }
+      Object.assign(skill, fields);
+      skill.version = currentVersion(skill.version) + 1;
+    });
+  } catch (err) {
+    if (err instanceof ConflictError) return conflictState(err.message, fields);
+    return errorState("No se pudo guardar los cambios. Intenta de nuevo.", undefined, fields);
+  }
+
+  return successState("Cambios guardados.");
 }
 
 export async function deleteSkillAction(formData: FormData) {
