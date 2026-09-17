@@ -53,6 +53,20 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         error={fieldError(state, "githubUrl")}
       />
       <div>
+        <label className="mb-1 block text-sm font-medium">Logo de marca personal</label>
+        {profile.logoUrl && (
+          <div className="mb-2 flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element -- small admin-only preview thumbnail, not worth next/image's sizing ceremony here */}
+            <img src={profile.logoUrl} alt="Logo actual" className="h-12 w-12 rounded border border-neutral-200 object-contain" />
+            <p className="text-xs text-neutral-500">Actual: {profile.logoUrl}</p>
+          </div>
+        )}
+        <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/gif" className="text-sm" />
+        <p className="mt-1 text-xs text-neutral-500">
+          Se usa como logo en el encabezado del sitio público y como ícono (favicon) de la pestaña del navegador.
+        </p>
+      </div>
+      <div>
         <label className="mb-1 block text-sm font-medium">Foto principal (hero)</label>
         {profile.heroPhotoUrl && <p className="mb-1 text-xs text-neutral-500">Actual: {profile.heroPhotoUrl}</p>}
         <input type="file" name="heroPhoto" accept="image/png,image/jpeg,image/webp,image/gif" className="text-sm" />

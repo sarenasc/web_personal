@@ -105,9 +105,16 @@ export async function updateProfileAction(_prevState: ActionState, formData: For
     if (hero.url) await deleteUploadedFile(hero.url);
     return errorState(about.error, undefined, fields);
   }
+  const logo = await uploadPhotoField(formData, "logo");
+  if (logo.error) {
+    if (hero.url) await deleteUploadedFile(hero.url);
+    if (about.url) await deleteUploadedFile(about.url);
+    return errorState(logo.error, undefined, fields);
+  }
 
   let previousHeroUrl: string | undefined;
   let previousAboutUrl: string | undefined;
+  let previousLogoUrl: string | undefined;
   try {
     await updateContent((content) => {
       if (currentVersion(content.profile.version) !== submittedVersion) {
@@ -115,19 +122,23 @@ export async function updateProfileAction(_prevState: ActionState, formData: For
       }
       previousHeroUrl = content.profile.heroPhotoUrl;
       previousAboutUrl = content.profile.aboutPhotoUrl;
+      previousLogoUrl = content.profile.logoUrl;
       content.profile = { ...content.profile, ...fields, version: currentVersion(content.profile.version) + 1 };
       if (hero.url) content.profile.heroPhotoUrl = hero.url;
       if (about.url) content.profile.aboutPhotoUrl = about.url;
+      if (logo.url) content.profile.logoUrl = logo.url;
     });
   } catch (err) {
     if (hero.url) await deleteUploadedFile(hero.url);
     if (about.url) await deleteUploadedFile(about.url);
+    if (logo.url) await deleteUploadedFile(logo.url);
     if (err instanceof ConflictError) return conflictState(err.message, fields);
     return errorState("No se pudo guardar el perfil. Intenta de nuevo.", undefined, fields);
   }
 
   if (hero.url && previousHeroUrl) void deleteUploadedFile(previousHeroUrl);
   if (about.url && previousAboutUrl) void deleteUploadedFile(previousAboutUrl);
+  if (logo.url && previousLogoUrl) void deleteUploadedFile(previousLogoUrl);
   return successState("Perfil guardado.");
 }
 

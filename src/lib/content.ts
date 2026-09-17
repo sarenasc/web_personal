@@ -25,6 +25,8 @@ export type Profile = {
   githubUrl: string;
   heroPhotoUrl: string;
   aboutPhotoUrl: string;
+  /** Optional (not required, unlike heroPhotoUrl/aboutPhotoUrl) since it was added after those — existing saved profiles don't have it yet and must still validate. */
+  logoUrl?: string;
   version?: number;
 };
 
@@ -86,6 +88,9 @@ function isString(v: unknown): v is string {
 function isOptionalNumber(v: unknown): boolean {
   return v === undefined || typeof v === "number";
 }
+function isOptionalString(v: unknown): boolean {
+  return v === undefined || typeof v === "string";
+}
 
 function isProfile(v: unknown): v is Profile {
   if (typeof v !== "object" || v === null) return false;
@@ -102,6 +107,7 @@ function isProfile(v: unknown): v is Profile {
     isString(p.githubUrl) &&
     isString(p.heroPhotoUrl) &&
     isString(p.aboutPhotoUrl) &&
+    isOptionalString(p.logoUrl) &&
     isOptionalNumber(p.version)
   );
 }

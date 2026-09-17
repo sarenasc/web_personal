@@ -25,7 +25,13 @@ export default async function Home() {
   }, {});
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-24">
+    <>
+      {profile.logoUrl && (
+        <header className="mx-auto w-full max-w-3xl px-6 pt-6">
+          <Image src={profile.logoUrl} alt={`Logo de ${profile.name}`} width={40} height={40} className="h-10 w-auto" />
+        </header>
+      )}
+      <main className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-24">
       {/* Hero */}
       <section className="mb-24 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
         <div className="h-20 w-20 shrink-0 border border-cyan text-cyan sm:h-24 sm:w-24">
@@ -186,7 +192,8 @@ export default async function Home() {
 
         <ContactForm />
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 
