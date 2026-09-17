@@ -299,6 +299,51 @@ export async function addEducationAction(_prevState: ActionState, formData: Form
   return successState("Educación agregada.");
 }
 
+export async function updateEducationAction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdmin();
+
+  const id = trimmedString(formData, "id", 100);
+  const submittedVersion = Number(formData.get("version") ?? "1");
+  const idempotencyKey = trimmedString(formData, "idempotencyKey", 100);
+  const fields = {
+    institution: trimmedString(formData, "institution", 200),
+    program: trimmedString(formData, "program", 200),
+    startDate: trimmedString(formData, "startDate", 50),
+    endDate: trimmedString(formData, "endDate", 50),
+    description: trimmedString(formData, "description", 2000),
+  };
+
+  const errors: Record<string, string> = {};
+  requireNonEmpty(fields.institution, "institution", errors, "Institución");
+  requireNonEmpty(fields.program, "program", errors, "Programa");
+  if (Object.keys(errors).length > 0) {
+    return errorState("Revisa los campos marcados.", errors, fields);
+  }
+
+  if (idempotencyKey && !(await claimIdempotencyKey(`update-education:${idempotencyKey}`))) {
+    return successState("Cambios guardados.");
+  }
+
+  try {
+    await updateContent((content) => {
+      const edu = content.education.find((e) => e.id === id);
+      if (!edu) {
+        throw new ConflictError("Este registro ya no existe (probablemente se eliminó en otra sesión).");
+      }
+      if (currentVersion(edu.version) !== submittedVersion) {
+        throw new ConflictError("Este registro se modificó en otra sesión mientras lo editabas. Revisa los valores actuales.");
+      }
+      Object.assign(edu, fields);
+      edu.version = currentVersion(edu.version) + 1;
+    });
+  } catch (err) {
+    if (err instanceof ConflictError) return conflictState(err.message, fields);
+    return errorState("No se pudo guardar los cambios. Intenta de nuevo.", undefined, fields);
+  }
+
+  return successState("Cambios guardados.");
+}
+
 export async function deleteEducationAction(formData: FormData) {
   await requireAdmin();
   const id = trimmedString(formData, "id", 100);
